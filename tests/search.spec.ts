@@ -47,3 +47,26 @@ test("поиск dog открывает статичную иконку и ск�
   expect(file.name.endsWith(".png")).toBe(true);
   expect(file.size).toBeGreaterThan(0);
 });
+
+test("поиск car и фильтр Windows показывает иконку", async ({ page }) => {
+  const search = new SearchPage(page);
+
+  await search.open();
+  await search.closeCookieBanner();
+  await search.typeQuery("car");
+  await expect(search.carSuggestion()).toHaveText("car");
+  await search.clickCarSuggestion();
+  // Сначала стабильная выдача car. Иконка с прошлой страницы за результат фильтра не считается.
+  await expect(page).toHaveURL(/\/car(?:[?#].*)?$/);
+  await expect(search.firstIcon()).toBeVisible();
+  await expect.poll(() => search.isFirstIconImageLoaded()).toBe(true);
+
+  // Пустую сетку ловим с клика. Имя иконки не сверяем: после паузы список собирается заново.
+  const gridCleared = search.waitForGridToClear();
+  await search.chooseWindows();
+  await expect(page).toHaveURL(/\/car--os-windows(?:[?#].*)?$/);
+  await gridCleared;
+  await expect(search.firstIcon()).toBeVisible();
+  await expect(search.firstIconImage()).toBeVisible();
+  await expect.poll(() => search.isFirstIconImageLoaded()).toBe(true);
+});
