@@ -111,9 +111,42 @@ export class SearchPage {
     await this.firstSuggestion().click();
   }
 
+  carSuggestion(): Locator {
+    // Только выпадающий список, как у dog. Слово целиком: carrot не подходит.
+    return this.searchDropdown()
+      .locator('[data-test="search-suggest-result"]')
+      .locator('[data-test="search-suggest-result-link"]')
+      .filter({ hasText: /^car$/ });
+  }
+
+  private windowsButton(): Locator {
+    // Кнопка в одной группе с Android. Берём текст Windows, не подпись картинки logo.
+    // Вторая кнопка Windows — уже выбранный фильтр, она не в этой группе.
+    return this.page
+      .getByRole("button", { name: /Android/ })
+      .locator("..")
+      .getByRole("button")
+      .filter({ hasText: /^\s*Windows\s*$/ });
+  }
+
   async chooseStaticIcons(): Promise<void> {
     await this.staticIconsButton().click();
     await this.page.waitForURL(/--static(?:[?#].*)?$/);
+  }
+
+  async clickCarSuggestion(): Promise<void> {
+    await this.carSuggestion().click();
+  }
+
+  async chooseWindows(): Promise<void> {
+    await this.windowsButton().click();
+  }
+
+  waitForGridToClear(): Promise<void> {
+    // Список на миг пустеет. Ждём это с кадра клика: адрес страницы меняется раньше карточек.
+    return this.page.waitForFunction(() => {
+      return document.querySelectorAll('a.app-grid-icon[data-test="grid-icon"]').length === 0;
+    });
   }
 
   async clickFirstIcon(): Promise<void> {
