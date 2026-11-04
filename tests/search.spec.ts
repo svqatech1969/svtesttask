@@ -70,3 +70,16 @@ test("поиск car и фильтр Windows показывает иконку",
   await expect(search.firstIconImage()).toBeVisible();
   await expect.poll(() => search.isFirstIconImageLoaded()).toBe(true);
 });
+
+test("поиск asdqweqweasd показывает заголовок пустого результата и адрес запроса", async ({ page }) => {
+  const search = new SearchPage(page);
+
+  await search.open();
+  await search.closeCookieBanner();
+  await search.search("asdqweqweasd");
+
+  // На сайте в заголовке первая буква большая, в адресе то же слово строчное.
+  await expect(search.noIconsHeading()).toHaveText("No icons found for Asdqweqweasd");
+  // Путь заканчивается на /asdqweqweasd. Кусок в середине не подходит.
+  await expect(page).toHaveURL(/\/asdqweqweasd(?:[?#].*)?$/);
+});

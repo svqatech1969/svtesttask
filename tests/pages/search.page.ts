@@ -42,6 +42,11 @@ export class SearchPage {
     return this.page.getByRole("heading", { level: 1 });
   }
 
+  noIconsHeading(): Locator {
+    // Начало фразы, без запроса. Полный текст заголовка проверяет тест.
+    return this.page.getByRole("heading", { level: 2, name: /^No icons found for/ });
+  }
+
   private searchDropdown(): Locator {
     return this.page.locator('[data-test="search-dropdown"]');
   }
