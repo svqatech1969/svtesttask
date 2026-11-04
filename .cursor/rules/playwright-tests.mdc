@@ -1,0 +1,58 @@
+---
+description: Как писать e2e-тесты Icons8 на Playwright и TypeScript
+globs: "**/*.ts,playwright.config.ts"
+alwaysApply: false
+---
+
+# Автотесты Playwright
+
+Стек: Playwright + TypeScript. Эталон структуры проекта — Page Object.
+
+## Page Object
+
+Один класс на страницу, файл в `tests/pages`. В классе поиск элементов и действия со страницей. В `tests/*.spec.ts` только шаги сценария и проверки. Локаторы в тесте не писать.
+
+```ts
+// tests/pages/search.page.ts
+export class SearchPage {
+  constructor(private readonly page: Page) {}
+
+  async search(query: string) {
+    await this.page.getByRole("searchbox").fill(query);
+  }
+}
+
+// tests/search.spec.ts — только сценарий
+const search = new SearchPage(page);
+await search.search("cat");
+```
+
+## Локаторы
+
+Внутри класса страницы искать элемент по роли, видимому тексту или устойчивому атрибуту. Фиксированные паузы не использовать.
+
+```ts
+// Плохо
+await page.waitForTimeout(3000);
+await page.locator("div.icons > div:nth-child(1)").click();
+
+// Хорошо — внутри класса страницы
+await this.page.getByRole("heading", { level: 1 }).waitFor();
+```
+
+## Независимость
+
+- Тест сам открывает страницу и не зависит от другого теста.
+- Не привязываться к имени конкретной иконки. Брать первую подходящую иконку на странице.
+- Баннер cookie закрывать до проверок, одним и тем же способом для всех тестов.
+
+## Обязательные сценарии
+
+1. Поиск `cat`: видна выдача и иконки, заголовок H1 содержит `cat`, адрес содержит `/cat`.
+2. Клик по иконке из выдачи: видно название и кнопку скачивания.
+
+Скачивание добавлять только для бесплатного маленького PNG у статичной иконки. Проверить расширение `.png` и размер больше 0. Анимированный GIF не скачивать: он платный.
+
+## Запуск
+
+Обычный Chrome с окном (`headless: false`). `workers` не больше 2.
