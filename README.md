@@ -2,6 +2,30 @@
 
 Автотесты публичного сайта [icons8.com](https://icons8.com) на Playwright и TypeScript.
 
+## Установка и запуск
+
+Нужны [Node.js](https://nodejs.org/) 22 или новее и обычный Google Chrome. Тесты открывают Chrome с окном.
+
+```sh
+git clone https://github.com/svqatech1969/svtesttask.git
+cd svtesttask
+npm ci
+```
+
+`npm ci` ставит библиотеки по файлу `package-lock.json`.
+
+Создай в корне файл `.env`. В Git он не попадает. Логин и пароль оставь пустыми: своим аккаунтом тесты не входят.
+
+```
+URL=https://icons8.com
+LOGIN=
+PASSWORD=
+```
+
+```sh
+npm test
+```
+
 ## Структура
 
 ```
@@ -62,4 +86,4 @@ SVTestTask/
 
 **tsconfig.json** — настройка языка TypeScript для редактора и проверки типов. Отдельные файлы из него не собираются: сценарии запускает Playwright.
 
-**README.md** — этот файл. В нём схема проекта и короткое описание папок и файлов.
+**README.md** — этот файл. В нём установка, схема проекта и короткое описание папок и файлов.
