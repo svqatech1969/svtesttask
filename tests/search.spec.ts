@@ -16,3 +16,34 @@ test("поиск cat показывает иконки и заголовок", a
   await expect.poll(() => search.isFirstIconImageLoaded()).toBe(true);
   await expect(search.heading()).toContainText(/cat/i);
 });
+
+test("поиск dog открывает статичную иконку и скачивает маленький PNG", async ({ page }) => {
+  const search = new SearchPage(page);
+
+  await search.open();
+  await search.closeCookieBanner();
+  await search.typeQuery("dog");
+  // Первая подсказка должна быть ровно этим словом: dogs и hotdog не подходят.
+  await expect(search.firstSuggestion()).toHaveText("dog");
+  await search.clickFirstSuggestion();
+  await search.chooseStaticIcons();
+  await expect.poll(() => search.isFirstIconStatic()).toBe(true);
+
+  const iconName = (await search.firstIconTitle().innerText()).trim();
+  await search.clickFirstIcon();
+  await expect(search.openedIconName()).toHaveText(iconName);
+
+  const download = search.downloadButton();
+  await expect(download).toBeVisible();
+  await expect(download).toBeEnabled();
+  await search.checkDownloadButtonClickable();
+
+  await search.openDownloadForm();
+  await search.choosePngFormat();
+  await search.chooseSmallPngSize();
+  await expect(search.smallPngSize()).toBeChecked();
+  const file = await search.savePngDownload();
+
+  expect(file.name.endsWith(".png")).toBe(true);
+  expect(file.size).toBeGreaterThan(0);
+});

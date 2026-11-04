@@ -3,4 +3,7 @@ node_modules/
 .env.*
 playwright/.cache/
 blob-report/
+downloads/
+playwright-report/
+test-results/
 Техническое задание/

@@ -13,6 +13,12 @@ export default defineConfig({
   reporter: "html",
   use: {
     ...devices["Desktop Chrome"],
+    // Окно Chrome на весь экран. Фиксированный размер страницы этому мешает.
+    viewport: null,
+    deviceScaleFactor: undefined,
+    launchOptions: {
+      args: ["--start-maximized"],
+    },
     baseURL: process.env.URL ?? "https://icons8.com",
     channel: "chrome",
     headless: false,
