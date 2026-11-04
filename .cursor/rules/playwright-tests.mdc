@@ -55,4 +55,4 @@ await this.page.getByRole("heading", { level: 1 }).waitFor();
 
 ## Запуск
 
-Обычный Chrome с окном (`headless: false`). `workers` не больше 2.
+Обычный Chrome с окном на весь экран (`headless: false`, без фиксированного размера страницы). `workers` не больше 2.
